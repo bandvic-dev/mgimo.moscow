@@ -1,2 +1,2 @@
-/public_html/node_modules
-/public_html/.env
+/public_html/server/node_modules
+/public_html/server/.env
