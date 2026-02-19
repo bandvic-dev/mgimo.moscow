@@ -69,8 +69,6 @@ router.get('/', auth, async (req, res) => {
 
 router.get("/messages", auth, async (req, res) => {
   try {
-    console.log("USER FROM TOKEN:", req.user)
-
     const userId = req.user.id
 
     const [rows] = await db.query(
@@ -101,18 +99,34 @@ router.post("/messages", auth, async (req, res) => {
       return res.status(400).json({ error: "Message text required" })
     }
 
-    await db.query(
+    // 1️⃣ Вставляем сообщение
+    const [result] = await db.query(
       "INSERT INTO messages (user_id, text) VALUES (?, ?)",
       [userId, text]
     )
 
-    res.status(201).json({ message: "Message created" })
+    // 2️⃣ Сразу получаем добавленное сообщение вместе с username
+    const [rows] = await db.query(
+      `
+      SELECT 
+        messages.id,
+        messages.text,
+        messages.created_at,
+        users.username
+      FROM messages
+      JOIN users ON messages.user_id = users.id
+      WHERE messages.id = ?
+      `,
+      [result.insertId]
+    )
+
+    // 3️⃣ Возвращаем готовый объект
+    res.status(201).json(rows[0])
 
   } catch (err) {
     console.error("POST MESSAGE ERROR:", err)
     res.status(500).json({ error: "Database error" })
   }
 })
-
 
 export default router

@@ -121,7 +121,7 @@ const sendMessage = async () => {
   if (!newMessage.value) return
 
   try {
-    await api.post(
+    const res = await api.post(
       '/messages',
       { text: newMessage.value },
       {
@@ -131,8 +131,11 @@ const sendMessage = async () => {
       },
     )
 
+    // ✅ Добавляем новое сообщение сразу в список
+    messages.value.push(res.data)
+
     newMessage.value = ''
-    await fetchMessages()
+
   } catch (err) {
     console.log('Error sending message')
   }
