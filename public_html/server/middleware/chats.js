@@ -92,4 +92,27 @@ router.get("/messages", auth, async (req, res) => {
   }
 })
 
+router.post("/messages", auth, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { text } = req.body
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "Message text required" })
+    }
+
+    await db.query(
+      "INSERT INTO messages (user_id, text) VALUES (?, ?)",
+      [userId, text]
+    )
+
+    res.status(201).json({ message: "Message created" })
+
+  } catch (err) {
+    console.error("POST MESSAGE ERROR:", err)
+    res.status(500).json({ error: "Database error" })
+  }
+})
+
+
 export default router
