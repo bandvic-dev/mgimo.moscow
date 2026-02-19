@@ -1,6 +1,6 @@
-const express = require('express')
-const db = require('../db')
-const auth = require('./auth')
+import express from 'express'
+import db from '../db.js'
+import auth from './auth.js'
 
 const router = express.Router()
 
@@ -67,18 +67,29 @@ router.get('/', auth, async (req, res) => {
   res.json(rows)
 })
 
-router.get('/:chatId/messages', auth, async (req, res) => {
-  const { chatId } = req.params
+router.get("/messages", auth, async (req, res) => {
+  try {
+    console.log("USER FROM TOKEN:", req.user)
 
-  const [messages] = await db.query(`
-    SELECT m.*, u.username
-    FROM messages m
-    JOIN users u ON u.id = m.user_id
-    WHERE m.chat_id = ?
-    ORDER BY m.created_at ASC
-  `, [chatId])
+    const userId = req.user.id
 
-  res.json(messages)
+    const [rows] = await db.query(
+      `SELECT 
+        messages.id,
+        messages.text,
+        messages.created_at,
+        users.username
+      FROM messages
+      JOIN users ON messages.user_id = users.id
+      ORDER BY messages.created_at ASC
+    `
+    )
+
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: "Database error" })
+  }
 })
 
-module.exports = router
+export default router

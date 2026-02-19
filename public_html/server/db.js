@@ -1,10 +1,13 @@
-const mysql = require('mysql2')
+import mysql from 'mysql2'
+import dotenv from 'dotenv'
+
+const env = dotenv.config().parsed
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
+  host: env.DB_HOST,
+  user: env.DB_USER,
+  password: env.DB_PASS,
+  database: env.DB_NAME
 })
 
-module.exports = pool.promise()
+export default pool.promise()

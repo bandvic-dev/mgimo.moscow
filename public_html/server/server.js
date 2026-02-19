@@ -1,20 +1,21 @@
-require('dotenv').config()
-const express = require('express')
-const http = require('http')
-const cors = require('cors')
-const { Server } = require('socket.io')
+import express from 'express'
+import http from 'http'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import { Server } from 'socket.io'
 
-const authRoutes = require('./routes/auth')
-const chatRoutes = require('./server/routes/chats')
+const env = dotenv.config().parsed
 
-const db = require('./db')
+import authRoutes from './routes/auth.js'
+import chatRoutes from './middleware/chats.js'
+import db from './db.js'
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-app.use('/auth', authRoutes)
-app.use('/chats', chatRoutes)
+app.use(authRoutes)
+app.use(chatRoutes)
 
 const server = http.createServer(app)
 
@@ -29,7 +30,7 @@ io.use((socket, next) => {
 
   try {
     const jwt = require('jsonwebtoken')
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, env.JWT_SECRET)
     socket.user = decoded
     next()
   } catch {
@@ -79,6 +80,6 @@ io.on('connection', (socket) => {
   })
 })
 
-server.listen(process.env.PORT, () => {
-  console.log('Server running')
+server.listen(env.PORT, () => {
+  console.log('Server running on port', env.PORT)
 })

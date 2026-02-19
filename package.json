@@ -1,8 +1,14 @@
 {
-  "type": "module",
+  "name": "mgimo.moscow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
@@ -11,8 +17,5 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.17.2",
     "socket.io": "^4.8.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.11"
   }
 }
